@@ -11,15 +11,44 @@ app.use(express.static(__dirname));
 
 const PORT = process.env.PORT || 3099;
 const DATABASE_URL = process.env.DATABASE_URL;
+const ACCESS_PASSWORD = process.env.ACCESS_PASSWORD || "interview2026";
 
 if (!DATABASE_URL) {
   console.error("DATABASE_URL not set. Add it in Render Environment.");
   process.exit(1);
 }
+if (!process.env.ACCESS_PASSWORD) {
+  console.warn("⚠️  ACCESS_PASSWORD not set, using default. Set it in Render Environment!");
+}
 
 const pool = new Pool({
   connectionString: DATABASE_URL,
   ssl: { rejectUnauthorized: false }
+});
+
+// Simple session store: token -> expiry (30 days)
+const sessions = new Map();
+
+app.post("/api/login", (req, res) => {
+  const { password } = req.body || {};
+  if (password === ACCESS_PASSWORD) {
+    const token = uuidv4();
+    sessions.set(token, Date.now() + 30 * 24 * 60 * 60 * 1000);
+    res.json({ token });
+  } else {
+    res.status(401).json({ error: "密码错误" });
+  }
+});
+
+// Protect all /api routes except /login
+app.use("/api", (req, res, next) => {
+  const auth = req.headers.authorization || "";
+  const token = auth.replace("Bearer ", "").trim();
+  const expiry = sessions.get(token);
+  if (token && expiry && expiry > Date.now()) {
+    return next();
+  }
+  res.status(401).json({ error: "unauthorized" });
 });
 
 async function init() {
