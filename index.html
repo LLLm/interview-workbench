@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>面试话术弹药库</title>
+<style>
+:root {
+  --bg: #F2F2F7;
+  --bg2: #FFFFFF;
+  --bg3: #E5E5EA;
+  --card-bg: rgba(255,255,255,0.85);
+  --card-border: rgba(60,60,67,0.08);
+  --card-shadow: 0 2px 12px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04);
+  --card-shadow-hover: 0 4px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06);
+  --frosted: rgba(255,255,255,0.72);
+  --frosted-border: rgba(60,60,67,0.12);
+  --text: #000000;
+  --text2: #3C3C43;
+  --text3: #8E8E93;
+  --separator: #C6C6C8;
+  --fill: rgba(60,60,67,0.06);
+  --fill2: rgba(60,60,67,0.12);
+  --blue: #007AFF;
+  --blue-bg: rgba(0,122,255,0.08);
+  --green: #34C759;
+  --green-bg: rgba(52,199,89,0.08);
+  --orange: #FF9500;
+  --orange-bg: rgba(255,149,0,0.08);
+  --red: #FF3B30;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --sidebar-w: 260px;
+  --font: "OPPOSans", "OPPOSans R", "Microsoft YaHei UI", "PingFang SC", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1C1C1E;
+    --bg2: #2C2C2E;
+    --bg3: #3A3A3C;
+    --card-bg: rgba(44,44,46,0.9);
+    --card-border: rgba(255,255,255,0.08);
+    --card-shadow: 0 2px 12px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.15);
+    --card-shadow-hover: 0 4px 24px rgba(0,0,0,0.4);
+    --frosted: rgba(44,44,46,0.78);
+    --frosted-border: rgba(255,255,255,0.1);
+    --text: #FFFFFF;
+    --text2: #EBEBF5;
+    --text3: #8E8E93;
+    --separator: #38383A;
+    --fill: rgba(255,255,255,0.06);
+    --fill2: rgba(255,255,255,0.12);
+    --blue: #0A84FF;
+    --blue-bg: rgba(10,132,255,0.1);
+    --green: #30D158;
+    --green-bg: rgba(48,209,88,0.1);
+    --orange: #FF9F0A;
+    --orange-bg: rgba(255,159,10,0.1);
+    --red: #FF453A;
+  }
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html,body { height:100%; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.47;
+  display:flex; flex-direction:column; overflow:hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* top bar - ios nav style */
+.topbar {
+  height: 48px;
+  border-bottom: 0.5px solid var(--separator);
+  display:flex; align-items:center; padding:0 16px; gap:10px;
+  flex-shrink:0;
+  background: var(--frosted);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  backdrop-filter: blur(20px) saturate(1.4);
+  user-select:none;
+}
+.topbar-logo {
+  font-family: "OPPOSans", -apple-system, sans-serif;
+  font-size: 20px; font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--text);
+}
+.topbar-logo span { color: var(--text3); font-weight:400; font-size:15px; }
+.topbar-tag {
+  font-size:12px; color:var(--text3);
+  padding:3px 10px;
+  background: var(--fill);
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.2px;
+}
+.topbar-menu {
+  width:32px; height:32px; display:flex; align-items:center; justify-content:center;
+  border-radius: var(--radius-sm); cursor:pointer; color:var(--blue);
+  font-size:18px; flex-shrink:0;
+  transition: background 0.2s cubic-bezier(0.25,0.1,0.25,1);
+}
+.topbar-menu:hover { background:var(--fill); }
+.topbar-stats { margin-left:auto; display:flex; gap:18px; font-size:13px; color:var(--text3); }
+.topbar-stats span { color:var(--text); font-weight:600; }
+
+/* sidebar - grouped list style */
+.layout { display:flex; flex:1; overflow:hidden; }
+.sidebar {
+  width: var(--sidebar-w); flex-shrink:0;
+  border-right: 0.5px solid var(--separator);
+  background: var(--bg2);
+  display:flex; flex-direction:column; overflow:hidden;
+  transition: width 0.35s cubic-bezier(0.25,0.1,0.25,1), opacity 0.35s;
+}
+.sidebar.collapsed { width:0; opacity:0; border-right:none; }
+.sidebar-scroll { flex:1; overflow-y:auto; padding:8px 0; }
+.sidebar-group { margin-bottom:4px; }
+.sidebar-group-title {
+  font-size: 13px; color: var(--text3); text-transform: uppercase;
+  letter-spacing: 0.5px; padding: 8px 20px 4px; font-weight: 600;
+}
+.sidebar-item {
+  display:flex; align-items:center; gap:10px;
+  padding: 8px 20px; margin: 0 6px;
+  cursor:pointer; font-size: 15px; color: var(--text);
+  border-radius: var(--radius-sm); position:relative;
+  transition: background 0.2s cubic-bezier(0.25,0.1,0.25,1);
+}
+.sidebar-item:hover { background: var(--fill); }
+.sidebar-item.active { background: var(--blue-bg); color: var(--blue); }
+.sidebar-item .si-icon { width:22px; text-align:center; font-size:15px; color:var(--text3); flex-shrink:0; }
+.sidebar-item.active .si-icon { color:var(--blue); }
+.sidebar-item .si-badge {
+  margin-left:auto; font-size:12px; color:var(--text3);
+  background: var(--fill); padding:1px 8px; border-radius:10px; height:20px; line-height:18px;
+}
+.sidebar-item .si-dots {
+  visibility:hidden; margin-left:4px; font-size:14px; color:var(--text3);
+  padding:2px 4px; border-radius:4px;
+}
+.sidebar-item:hover .si-dots { visibility:visible; }
+.sidebar-item .si-dots:hover { background:var(--fill2); color:var(--text); }
+.sidebar-divider { height:0.5px; background:var(--separator); margin:8px 20px; }
+.add-module-btn { font-size:13px; color:var(--blue); cursor:pointer; padding:0 4px; font-weight:600; }
+.add-module-btn:hover { opacity:0.8; }
+
+/* main content */
+.main { flex:1; padding: 20px 28px; overflow-y:auto; }
+.page-header { margin-bottom: 20px; display:flex; align-items:center; justify-content:space-between; }
+.page-header-left h2 {
+  font-family: "OPPOSans", -apple-system, sans-serif;
+  font-size: 28px; font-weight: 600;
+  letter-spacing: 0.3px; margin-bottom:2px;
+  color: var(--text);
+}
+.page-header-left p { font-size: 15px; color: var(--text3); }
+.page-header-actions { display:flex; gap:8px; }
+
+/* buttons - ios style */
+.btn-text {
+  padding:6px 16px; border:none; border-radius: var(--radius-sm);
+  background: var(--blue-bg); color: var(--blue);
+  cursor:pointer; font-size:13px; font-weight:500;
+  display:flex; align-items:center; gap:4px;
+  transition: background 0.2s, opacity 0.2s;
+}
+.btn-text:hover { background: rgba(0,122,255,0.12); }
+.btn-primary {
+  padding:6px 18px; border:none; border-radius: var(--radius-sm);
+  background: var(--blue); color: #FFFFFF;
+  cursor:pointer; font-size:13px; font-weight:500;
+  display:flex; align-items:center; gap:4px;
+  transition: opacity 0.2s;
+}
+.btn-primary:hover { opacity: 0.85; }
+.btn-icon {
+  width:32px; height:32px; display:flex; align-items:center; justify-content:center;
+  border:none; border-radius: var(--radius-sm);
+  background: var(--fill); cursor:pointer; color: var(--text2); font-size:15px;
+  transition: background 0.2s;
+}
+.btn-icon:hover { background: var(--fill2); }
+
+/* cards - ios list style */
+.card-grid { display:flex; flex-direction:column; gap:0; }
+.card {
+  background: var(--card-bg);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 0.5px solid var(--card-border);
+  padding: 14px 18px;
+  cursor:pointer;
+  transition: box-shadow 0.3s cubic-bezier(0.25,0.1,0.25,1), transform 0.2s;
+  position:relative;
+}
+.card:first-child { border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+.card:last-child { border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+.card:only-child { border-radius: var(--radius-lg); }
+.card + .card { border-top: none; }
+.card:hover { 
+  box-shadow: var(--card-shadow-hover);
+  z-index: 2;
+  transform: translateY(-1px);
+}
+.card.draghandle::before {
+  content:""; position:absolute; left:0; top:0; bottom:0; width:20px;
+  background: linear-gradient(90deg, var(--fill) 0%, transparent 100%);
+  opacity:0; border-radius: 16px 0 0 16px;
+  transition: opacity 0.2s;
+}
+.card.draghandle:hover::before { opacity:0.5; }
+.card-actions {
+  position:absolute; top:12px; right:12px;
+  display:flex; gap:6px; opacity:0;
+  transition: opacity 0.2s;
+}
+.card:hover .card-actions { opacity:1; }
+.card-act {
+  width:28px; height:28px; display:flex; align-items:center; justify-content:center;
+  border:none; border-radius: 6px;
+  background: var(--fill); cursor:pointer; font-size:13px; color:var(--text2);
+  transition: background 0.15s;
+}
+.card-act:hover { background: var(--fill2); color: var(--text); }
+.card-act.del:hover { color: var(--red); background: var(--red); color:#fff; }
+.card-header { display:flex; align-items:flex-start; gap:10px; }
+.card-status {
+  flex-shrink:0; width:8px; height:8px; border-radius:4px;
+  margin-top:5px;
+}
+.card-status.polished { background: var(--green); }
+.card-status.draft { background: var(--orange); }
+.card-title { font-weight: 500; font-size: 17px; color: var(--text); margin-bottom:2px; letter-spacing:-0.2px; }
+.card-subtitle { font-size: 13px; color: var(--text3); }
+.card-tags { display:flex; gap:4px; flex-wrap:wrap; margin:6px 0 0; }
+.card-tag {
+  font-size: 12px; padding: 2px 8px; border-radius: 4px;
+  color: var(--text3); background: var(--fill);
+  font-weight: 400;
+}
+.card-tag.scene { background: var(--blue-bg); color: var(--blue); }
+.card-tag.data { background: var(--green-bg); color: var(--green); }
+.card-detail { display:none; margin-top:10px; padding-top:10px; border-top:0.5px solid var(--separator); font-size:15px; line-height:1.6; color: var(--text2); }
+.card.expanded { box-shadow: var(--card-shadow); }
+.card.expanded .card-detail { display:block; }
+.card-detail .label {
+  font-size: 12px; color: var(--text3); font-weight: 600;
+  margin-bottom:4px; margin-top:10px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.card-detail .label:first-child { margin-top:0; }
+.card-detail .quote {
+  background: var(--fill); padding: 10px 14px; border-radius: var(--radius-sm);
+  margin:4px 0; font-size:15px; line-height:1.6; color: var(--text2);
+}
+.key { color: var(--blue); font-weight:500; }
+
+/* resume */
+.resume-section { display:flex; flex-direction:column; align-items:center; gap:16px; padding:40px 0; }
+.resume-preview {
+  width:100%; max-width:520px;
+  background: var(--card-bg);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 0.5px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  box-shadow: var(--card-shadow);
+  font-size: 15px; line-height:1.6; color: var(--text2);
+}
+
+/* forms - ios style */
+.company-form {
+  background: var(--card-bg);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 0.5px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  box-shadow: var(--card-shadow);
+}
+.company-form .form-row { display:flex; gap:8px; margin-bottom:10px; }
+.company-form .form-row:last-child { margin-bottom:0; }
+.company-form input, .company-form textarea {
+  background: var(--fill);
+  border: 0.5px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px; color: var(--text);
+  font-size: 15px; width:100%; outline:none;
+  font-family: var(--font);
+  transition: border-color 0.2s;
+}
+.company-form textarea { min-height:60px; resize:vertical; }
+.company-form input:focus, .company-form textarea:focus {
+  border-color: var(--blue);
+}
+.company-form .btn {
+  padding:6px 14px; border:none; border-radius: var(--radius-sm);
+  background: var(--fill); color: var(--blue); cursor:pointer;
+  font-size:13px; font-weight:500; white-space:nowrap;
+  transition: background 0.2s;
+}
+.company-form .btn:hover { background: var(--fill2); }
+
+.history-list { display:flex; flex-direction:column; gap:0; }
+.history-item {
+  background: var(--card-bg);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 0.5px solid var(--card-border);
+  padding: 12px 16px; display:flex; justify-content:space-between; align-items:center;
+  cursor:pointer;
+}
+.history-item:first-child { border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+.history-item:last-child { border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+.history-item + .history-item { border-top: none; }
+.history-item:hover { background: var(--fill); }
+.history-item .h-name { font-weight:500; font-size:15px; }
+.history-item .h-meta { font-size:13px; color:var(--text3); }
+
+/* modal - ios sheet style */
+.modal-overlay {
+  display:none; position:fixed; inset:0;
+  background: rgba(0,0,0,0.3);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  z-index:100; align-items:center; justify-content:center;
+}
+.modal-overlay.show { display:flex; }
+.modal {
+  background: var(--card-bg);
+  -webkit-backdrop-filter: blur(30px) saturate(1.4);
+  backdrop-filter: blur(30px) saturate(1.4);
+  border: 0.5px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  width: 520px; max-width:92vw; max-height:80vh; overflow-y:auto;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+}
+.modal h3 {
+  font-family: "OPPOSans", -apple-system, sans-serif;
+  font-size: 20px; font-weight: 600; margin-bottom: 16px;
+}
+.modal .field { margin-bottom: 12px; }
+.modal .field label {
+  display:block; font-size:13px; color:var(--text3); font-weight:600;
+  margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;
+}
+.modal .field input, .modal .field select, .modal .field textarea {
+  width:100%; padding:8px 12px;
+  border: 0.5px solid var(--card-border);
+  border-radius: var(--radius-sm); font-size:15px;
+  background: var(--fill); color:var(--text); outline:none;
+  font-family: var(--font);
+  transition: border-color 0.2s;
+}
+.modal .field textarea { min-height:50px; resize:vertical; }
+.modal .field input:focus, .modal .field textarea:focus {
+  border-color: var(--blue);
+}
+.modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:16px; }
+.modal-actions .btn {
+  padding:8px 20px; border:none; border-radius: var(--radius-sm);
+  background: var(--fill); cursor:pointer; font-size:15px; color: var(--blue);
+  font-weight:500; transition: background 0.2s;
+}
+.modal-actions .btn:hover { background: var(--fill2); }
+.modal-actions .btn.primary {
+  background: var(--blue); color: #FFFFFF;
+}
+.modal-actions .btn.primary:hover { opacity: 0.85; }
+.modal-actions .btn.danger { color: var(--red); background: transparent; }
+.modal-actions .btn.danger:hover { background: var(--red); color:#fff; }
+
+.section-item { display:flex; gap:6px; margin-bottom:8px; align-items:flex-start; }
+.section-item input { flex:1; }
+.section-item textarea { flex:2; min-height:36px; }
+.section-item .rm { color: var(--red); cursor:pointer; font-size:18px; padding:6px; }
+
+.search-empty { text-align:center; padding:40px 0; color:var(--text3); font-size:15px; }
+
+/* scrollbar */
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:var(--text3); border-radius:2px; }
+::-webkit-scrollbar-track { background:transparent; }
+</style>
+</head>
+<body>
+
+
+<div class="topbar">
+  <div class="topbar-menu" id="sidebarToggle">☰</div>
+  <div class="topbar-logo">面试话术弹药库 <span>· 胡佳其</span></div>
+  <div class="topbar-tag">执行落地 · 技术提效 · 内容赋能</div>
+  <div class="topbar-stats"><div>弹药 <span id="statTotal">0</span></div><div>已打磨 <span id="statPolished">0</span></div><div>待验证 <span id="statDraft">0</span></div></div>
+</div>
+<div class="layout">
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-scroll" id="sidebarContent"></div>
+</div>
+<div class="main" id="mainContent"></div>
+</div>
+
+<!-- modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+
+
+<script>
+
+const API = "/api";
+let modules = [], cards = [], currentModuleId = null;
+
+const BACKUP = {
+  "modules": [
+    {"id":"intro","title":"自我介绍","description":"不同场景下的版本，按需调用","icon":"🧑","order":0},
+    {"id":"exp","title":"经历","description":"每段经历的结构化弹药","icon":"📋","order":1},
+    {"id":"skill","title":"能力技能","description":"跨经历封装的核心能力","icon":"⚡","order":2},
+    {"id":"qa","title":"问答弹药","description":"按题型组织的高频问答","icon":"💬","order":3},
+    {"id":"phrase","title":"常用话术","description":"跨模块通用的骨架句","icon":"📝","order":4},
+    {"id":"resume","title":"个人简历","description":"可编辑修改","resumeData":{"name":"胡佳其","phone":"13135333569","email":"jackiehu0300@163.com","age":"22岁","location":"深圳","intent":"市场活动策划 / 活动运营","education":"湘潭理工学院 · 计算机科学与技术 · 本科","core":"执行落地·技术提效·内容赋能"},"order":5},
+    {"id":"company","title":"公司准备","description":"面试前调研与弹药组合","icon":"🏢","order":6}
+  ],
+  "cards": [
+    {"id":"c01","moduleId":"intro","title":"90秒标准版","subtitle":"正式面试 · 视频/现场","status":"polished","scenes":["正式面试"],"dataTags":["10+场活动"],"sections":[{"label":"话术","quote":"我叫胡佳其，22岁，计算机专业本科。\n\n核心能力三个关键词：执行落地——独立操盘10+场千人级活动，从搭建到控场零事故交付；技术提效——计算机+AI做活动数据复盘和方案产出；内容赋能——让活动不只做完还有沉淀。\n\n代表作：省级残疾人技能竞赛，200人三类障别差异化动线，零事故效率+35%；中车亲子活动1300人，商务到7场主持独立交付。\n\n我需要一个能独立盯现场、控流程、管物料的执行岗。"}],"order":0},
+    {"id":"c02","moduleId":"intro","title":"30秒简短版","subtitle":"HR电话突袭","status":"polished","scenes":["电话面试"],"dataTags":[],"sections":[{"label":"话术","quote":"我是胡佳其，22岁，计算机专业本科。10+场千人级活动独立操盘零事故。计算机+AI能力让我和纯文科背景的活动人有明显区别。"}],"order":1},
+    {"id":"c03","moduleId":"intro","title":"校招/双选会版","subtitle":"待补充","status":"draft","scenes":["校招"],"dataTags":[],"sections":[{"label":"待补充","quote":""}],"order":2},
+    {"id":"c04","moduleId":"exp","title":"残疾人岗位能手职业技能竞赛","subtitle":"赛事统筹 · 2024.07-08 · 200人","status":"polished","scenes":["最有成就感的事","复杂现场"],"dataTags":["零事故+35%"],"sections":[{"label":"一句话定义","quote":"全省200名三类残障选手，三套差异化动线，零事故效率提升35%。"},{"label":"核心判断","quote":"体验取决于引导颗粒度而非统一标准——视障要听得见的路，听障要看得见的信号，肢体障碍要过得去的空间。"},{"label":"行动结果","quote":"推翻统一模板，完成10工位无障碍改造，3轮模拟修复7处冲突。"},{"label":"钩子","quote":"活动现场的体验不是流程决定的，是细节密度决定的。"}],"order":0},
+    {"id":"c05","moduleId":"exp","title":"中车株机亲子无人机研学","subtitle":"项目负责人 · 2024.06 · 1300人/7场","status":"polished","scenes":["现场应变"],"dataTags":["零事故"],"sections":[{"label":"一句话定义","quote":"从商务提案到7场1300人活动独立交付。"},{"label":"核心判断","quote":"同时回应中车5个部门关切——能同时做到就不是福利活动，是品牌事件。提案一轮通过。"},{"label":"行动结果","quote":"无人机撒糖险情→3秒判断，话筒接过来把意外变互动。零投诉，中车官微主动报道。"},{"label":"钩子","quote":"现场控场不靠背稿子，靠判断下一幕的速度。"}],"order":1},
+    {"id":"c06","moduleId":"exp","title":"通航博览会/翼择无人机","subtitle":"营销策划 · 2024.06-10 · 1000+B端","status":"polished","scenes":["供应商管理"],"dataTags":["建联12%"],"sections":[{"label":"一句话定义","quote":"零供应商资源起步，1.5月筹备，触达1000+B端。"},{"label":"核心判断","quote":"B2B展会定位为品牌渗透+资源建联，不是销售转化。"},{"label":"行动结果","quote":"搜20家→筛3家→确认加急。独立完成宣传片、手册、易拉宝。建联率12%。"},{"label":"钩子","quote":"没有资源时，搜索能力就是最大的资源。"}],"order":2},
+    {"id":"c07","moduleId":"exp","title":"职教城青年歌手大赛","subtitle":"选手管理 · 2024.10 · 300人/9校","status":"polished","scenes":["UGC传播"],"dataTags":["触达5000+"],"sections":[{"label":"一句话定义","quote":"9校300选手，主动发起UGC传播战役。"},{"label":"核心判断","quote":"让选手自己做传播节点，效果比官方好得多。"},{"label":"行动结果","quote":"统一宣传卡+社群扩散+投票。触达约5000人。"},{"label":"钩子","quote":"真正有传播力的是让参与者自己愿意帮你传播。"}],"order":3},
+    {"id":"c08","moduleId":"exp","title":"PPT定制副业","subtitle":"小红书 · 20-40单","status":"draft","scenes":["商业思维"],"dataTags":["转化70%"],"sections":[{"label":"一句话定义","quote":"小红书PPT定制，服务爱奇艺悬疑短剧招商书。"},{"label":"核心判断","quote":"客户需要理解业务逻辑的人，不只会排版。"},{"label":"行动结果","quote":"70%自素材PS/AI，50-100元/页，转化率70%。"},{"label":"钩子","quote":"输出前想清楚受众是谁、要什么决策。"}],"order":4},
+    {"id":"c09","moduleId":"skill","title":"AI+数据工作流","subtitle":"差异化优势","status":"polished","scenes":["你为什么与众不同"],"dataTags":[],"sections":[{"label":"话术","quote":"每场活动做数据复盘表，AI可视化+趋势总结，沉淀SOP。别人靠经验，我做活动靠数据+AI+SOP。"}],"order":0},
+    {"id":"c10","moduleId":"skill","title":"供应商管理","subtitle":"从零起步","status":"polished","scenes":["供应商怎么找"],"dataTags":[],"sections":[{"label":"话术","quote":"搜20家→筛选表→看样→确认加急→签合作。选供应商不是比价格，是确认对方理解你的底线。"}],"order":1},
+    {"id":"c11","moduleId":"skill","title":"内容策略与创作","subtitle":"34篇推文","status":"polished","scenes":["内容运营"],"dataTags":[],"sections":[{"label":"话术","quote":"内容运营不是写得好，是想清楚谁在看、他为什么看、看完能做什么。"}],"order":2},
+    {"id":"c12","moduleId":"qa","title":"为什么从计算机转行做活动？","subtitle":"动机类","status":"polished","scenes":["动机类"],"dataTags":[],"sections":[{"label":"回答","quote":"不是转行，是交叉优势。计算机给我结构化思维和数据驱动习惯。活动策划核心是逻辑推演和效果量化。活动运营是技术思维和一线实战结合最好的岗位。"}],"order":0},
+    {"id":"c13","moduleId":"qa","title":"你对我们了解多少？","subtitle":"公司类","status":"polished","scenes":["公司类"],"dataTags":["考前必练"],"sections":[{"label":"三层框架","quote":"一层：定位+产品+动态。二层：竞品+反馈。三层：岗位+部门+问题。\n不能只说一层，不能跳一层说三层。"}],"order":1},
+    {"id":"c14","moduleId":"qa","title":"薪资谈判","subtitle":"压力类","status":"polished","scenes":["压力类"],"dataTags":["血泪教训"],"sections":[{"label":"回答","quote":"8K是我对岗位的合理预期。愿综合了解薪酬构成后确认。\n绝不主动降价。"}],"order":2},
+    {"id":"c15","moduleId":"qa","title":"你考过研？为什么不再考了？","subtitle":"动机类","status":"draft","scenes":["动机类"],"dataTags":[],"sections":[{"label":"回答","quote":"专业课考前5%，英语差14分。想要的东西考研给不了——真实市场判断力。主动选择，没有遗憾。不说天赋70%。"}],"order":3},
+    {"id":"c16","moduleId":"qa","title":"你有什么问题想问我们？","subtitle":"展望类","status":"draft","scenes":["展望类"],"dataTags":[],"sections":[{"label":"三个问题","quote":"1. 岗位最大挑战？入职三月的人解决什么？\n2. 团队配置？日常对接哪些部门？\n3. 最近XX方面的动向？"}],"order":4},
+    {"id":"c17","moduleId":"qa","title":"说说你最有成就感的一件事","subtitle":"经历类","status":"draft","scenes":["经历类"],"dataTags":[],"sections":[{"label":"提示","quote":"调用经历模块——推荐残疾人竞赛。一句话→核心判断→结果→钩子。"}],"order":5},
+    {"id":"c18","moduleId":"phrase","title":"过渡拉回句","subtitle":"话题跑偏时拉回来","status":"polished","scenes":["被带跑"],"dataTags":[],"sections":[{"label":"模板","quote":"这个方法我用得很顺。有意思的是，这种用框架搭结构+用XX做验证的思路后来迁移到了活动策划上——是一套底层能力在两件事上的不同应用。"}],"order":0},
+    {"id":"c19","moduleId":"phrase","title":"举证启动句","subtitle":"从我觉得到我做过","status":"polished","scenes":["替代我喜欢"],"dataTags":[],"sections":[{"label":"替换","quote":"我非常喜欢 → 我可以用一个经历来说明\n我觉得我适合 → 我有数据支撑这个判断\n我什么都会 → 我最核心的经验集中在三个方面"}],"order":1},
+    {"id":"c20","moduleId":"phrase","title":"压力回应句","subtitle":"被质疑时的标准启动","status":"polished","scenes":["被质疑","薪资"],"dataTags":[],"sections":[{"label":"模板","quote":"经验不足：底层逻辑相通——供应商管理、动线设计、风险预判，10场已验证。行业知识一月能补，执行能力不是一月能练的。\n薪资：8K是合理预期，愿综合了解后确认。"}],"order":2},
+    {"id":"c21","moduleId":"phrase","title":"结束收束句","subtitle":"回答完留钩子","status":"polished","scenes":["回答完","反问前"],"dataTags":[],"sections":[{"label":"模板","quote":"这是我目前的理解，放到贵公司可能需要调整——您实际中遇到的挑战？\n\n反问前：这个岗位实际工作中最大的挑战？\n\n结束时：谢谢，期待后续。"}],"order":3},
+    {"id":"c22","moduleId":"phrase","title":"开场定调句","subtitle":"缓冲","status":"draft","scenes":["不好接的问题"],"dataTags":[],"sections":[{"label":"模板","quote":"这个问题很好，我从两个层面来看——\n\n先定性再回答，争取3秒组织语言。"}],"order":4}
+  ]
+};
+
+async function restoreFromBackup() {
+  await fetch(API + "/data/restore", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(BACKUP) });
+}
+
+async function loadAll() {
+  let m;
+  try { m = await fetch(API + "/modules").then(function(r) { return r.json(); }); }
+  catch(e) { m = []; }
+  if (!m || m.length === 0) {
+    await restoreFromBackup();
+    m = await fetch(API + "/modules").then(function(r) { return r.json(); });
+  }
+  modules = m;
+  var allCards = [];
+  for (var i = 0; i < modules.length; i++) {
+    var c = await fetch(API + "/modules/" + modules[i].id + "/cards").then(function(r) { return r.json(); });
+    allCards = allCards.concat(c);
+  }
+  cards = allCards;
+  renderSidebar();
+  if (!currentModuleId && modules.length) { currentModuleId = modules[0].id; }
+  renderPage(currentModuleId);
+  updateStats();
+}
+
+function renderSidebar() {
+  var h = [];
+  h.push("<div class=\"sidebar-group\"><div class=\"sidebar-group-title\">模块 <span class=\"add-module-btn\" onclick=\"addModule()\">+</span></div>");
+  for (var i = 0; i < modules.length; i++) {
+    var m = modules[i];
+    var cls = m.id === currentModuleId ? "sidebar-item active" : "sidebar-item";
+    var count = 0;
+    for (var j = 0; j < cards.length; j++) {
+      if (cards[j].moduleId === m.id) count++;
+    }
+    var icon = m.icon || "📄";
+    h.push("<div class=\"" + cls + "\" data-id=\"" + m.id + "\"><span class=\"si-icon\">" + icon + "</span><span>" + m.title + "</span><span class=\"si-badge\">" + count + "</span><span class=\"si-dots\" onclick=\"event.stopPropagation();editModule(\'" + m.id + "\')\">✎</span></div>");
+  }
+  h.push("</div>");
+  document.getElementById("sidebarContent").innerHTML = h.join("");
+  var items = document.querySelectorAll(".sidebar-item");
+  for (var i = 0; i < items.length; i++) {
+    items[i].addEventListener("click", function() {
+      currentModuleId = this.getAttribute("data-id");
+      renderSidebar();
+      renderPage(currentModuleId);
+    });
+  }
+}
+
+function renderCard(c) {
+  var tags = "";
+  for (var i = 0; i < (c.scenes || []).length; i++) {
+    tags += "<span class=\"card-tag scene\">" + c.scenes[i] + "</span>";
+  }
+  for (var i = 0; i < (c.dataTags || []).length; i++) {
+    tags += "<span class=\"card-tag data\">" + c.dataTags[i] + "</span>";
+  }
+  var detail = "";
+  for (var i = 0; i < (c.sections || []).length; i++) {
+    detail += "<div class=\"label\">" + c.sections[i].label + "</div><div class=\"quote\">" + c.sections[i].quote + "</div>";
+  }
+  return "<div class=\"card draghandle\" data-id=\"" + c.id + "\" onclick=\"toggleCard(this)\"><div class=\"card-actions\"><div class=\"card-act\" onclick=\"event.stopPropagation();editCard(\'" + c.id + "\')\">✎</div><div class=\"card-act del\" onclick=\"event.stopPropagation();deleteCard(\'" + c.id + "\')\">✕</div></div><div class=\"card-header\"><div class=\"card-status " + c.status + "\"></div><div><div class=\"card-title\">" + c.title + "</div><div class=\"card-subtitle\">" + (c.subtitle || "") + "</div></div></div><div class=\"card-tags\">" + tags + "</div><div class=\"card-detail\">" + detail + "</div></div>";
+}
+
+async function renderPage(moduleId) {
+  var mod = null;
+  for (var i = 0; i < modules.length; i++) {
+    if (modules[i].id === moduleId) { mod = modules[i]; break; }
+  }
+  if (!mod) {
+    document.getElementById("mainContent").innerHTML = "<h2>选择左侧模块</h2>";
+    return;
+  }
+  var mc = [];
+  for (var i = 0; i < cards.length; i++) {
+    if (cards[i].moduleId === moduleId) mc.push(cards[i]);
+  }
+  mc.sort(function(a,b) { return a.order - b.order; });
+  
+  if (moduleId === "resume") {
+    var rd = mod.resumeData || {};
+    document.getElementById("mainContent").innerHTML =
+      "<div class=\"page\"><div class=\"page-header\"><div class=\"page-header-left\"><h2>个人简历</h2><p>" + (mod.description || "") + "</p></div><div class=\"page-header-actions\"><div class=\"btn-primary\" onclick=\"editResume()\">编辑简历</div></div></div>" +
+      "<div class=\"resume-section\"><div class=\"resume-preview\"><div style=\"font-weight:600;font-size:16px;margin-bottom:6px;\">" + (rd.name||"") + "</div>" +
+      "<div style=\"margin-bottom:10px;font-size:13px;\">" + (rd.phone||"") + " · " + (rd.email||"") + " · " + (rd.age||"") + " · " + (rd.location||"") + "</div>" +
+      "<div style=\"margin-bottom:6px;\"><span style=\"font-weight:500;\">求职意向</span>：" + (rd.intent||"") + "</div>" +
+      "<div style=\"margin-bottom:6px;\"><span style=\"font-weight:500;\">教育</span>：" + (rd.education||"") + "</div>" +
+      "<div style=\"font-weight:500;margin-top:4px;\">核心竞争力</div><div>" + (rd.core||"") + "</div></div></div></div>";
+    return;
+  }  
+  if (moduleId === "company") {
+    document.getElementById("mainContent").innerHTML = "<div class=\"page\"><div class=\"page-header\"><h2>公司准备</h2></div></div>";
+    return;
+  }
+  
+  var polished = 0;
+  for (var i = 0; i < mc.length; i++) {
+    if (mc[i].status === "polished") polished++;
+  }
+  
+  var cardsHtml = "";
+  for (var i = 0; i < mc.length; i++) {
+    cardsHtml += renderCard(mc[i]);
+  }
+  if (mc.length === 0) { cardsHtml = "<div class=\"search-empty\">还没有卡片</div>"; }
+  
+  document.getElementById("mainContent").innerHTML =     "<div class=\"page\"><div class=\"page-header\">" +     "<div class=\"page-header-left\"><h2>" + mod.title + "</h2><p>" + (mod.description || "") + " · " + mc.length + "项 · " + polished + "已打磨</p></div>" +     "<div class=\"page-header-actions\"><div class=\"btn-text\" onclick=\"editModule(\'" + moduleId + "\')\">✎ 编辑模块</div><div class=\"btn-primary\" onclick=\"addCard(\'" + moduleId + "\')\">+ 添加卡片</div></div></div>" +     "<div class=\"card-grid\">" + cardsHtml + "</div></div>";
+}
+
+function toggleCard(el) {
+  if (event && event.target.closest(".card-actions")) return;
+  var was = el.classList.contains("expanded");
+  var expanded = document.querySelectorAll(".card.expanded");
+  for (var i = 0; i < expanded.length; i++) {
+    expanded[i].classList.remove("expanded");
+  }
+  if (!was) el.classList.add("expanded");
+}
+
+function updateStats() {
+  var total = cards.length;
+  var polished = 0;
+  var draft = 0;
+  for (var i = 0; i < cards.length; i++) {
+    if (cards[i].status === "polished") polished++;
+    else draft++;
+  }
+  document.getElementById("statTotal").textContent = total;
+  document.getElementById("statPolished").textContent = polished;
+  document.getElementById("statDraft").textContent = draft;
+}
+
+async function addModule() {
+  var name = prompt("模块名称：");
+  if (!name) return;
+  var m = await fetch(API + "/modules", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: name, icon: "📄", description: "" }) }).then(function(r) { return r.json(); });
+  modules.push(m);
+  currentModuleId = m.id;
+  renderSidebar();
+  renderPage(m.id);
+}
+
+function editModule(id) {
+  var mod = null;
+  for (var i = 0; i < modules.length; i++) {
+    if (modules[i].id === id) { mod = modules[i]; break; }
+  }
+  if (!mod) return;
+  document.getElementById("modalOverlay").classList.add("show");
+  document.getElementById("modalContent").innerHTML =     "<h3>编辑模块</h3>" +     "<div class=\"field\"><label>标题</label><input id=\"modTitle\" value=\"" + mod.title + "\"></div>" +     "<div class=\"field\"><label>描述</label><input id=\"modDesc\" value=\"" + (mod.description || "") + "\"></div>" +     "<div class=\"field\"><label>图标</label><input id=\"modIcon\" value=\"" + (mod.icon || "📄") + "\" maxlength=\"2\"></div>" +     "<div class=\"modal-actions\"><div class=\"btn\" onclick=\"closeModal()\">取消</div><div class=\"btn danger\" onclick=\"deleteModule(\'" + id + "\')\">删除模块</div><div class=\"btn primary\" onclick=\"saveModule(\'" + id + "\')\">保存</div></div>";
+}
+
+async function saveModule(id) {
+  var title = document.getElementById("modTitle").value.trim();
+  if (!title) return;
+  var icon = document.getElementById("modIcon").value || "📄";
+  var desc = document.getElementById("modDesc").value;
+  var updated = await fetch(API + "/modules/" + id, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: title, icon: icon, description: desc }) }).then(function(r) { return r.json(); });
+  for (var i = 0; i < modules.length; i++) {
+    if (modules[i].id === id) { modules[i] = updated; break; }
+  }
+  closeModal();
+  renderSidebar();
+  renderPage(id);
+}
+
+async function deleteModule(id) {
+  if (!confirm("确认删除此模块及其所有卡片？")) return;
+  await fetch(API + "/modules/" + id, { method: "DELETE" });
+  var newModules = [];
+  for (var i = 0; i < modules.length; i++) {
+    if (modules[i].id !== id) newModules.push(modules[i]);
+  }
+  modules = newModules;
+  var newCards = [];
+  for (var i = 0; i < cards.length; i++) {
+    if (cards[i].moduleId !== id) newCards.push(cards[i]);
+  }
+  cards = newCards;
+  closeModal();
+  if (currentModuleId === id) {
+    currentModuleId = modules.length ? modules[0].id : null;
+  }
+  renderSidebar();
+  renderPage(currentModuleId);
+  updateStats();
+}
+
+async function addCard(moduleId) {
+  var c = await fetch(API + "/modules/" + moduleId + "/cards", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: "新卡片", subtitle: "", status: "draft", scenes: [], dataTags: [], sections: [{ label: "内容", quote: "" }] }) }).then(function(r) { return r.json(); });
+  cards.push(c);
+  renderPage(moduleId);
+  updateStats();
+}
+
+function editCard(id) {
+  var c = null;
+  for (var i = 0; i < cards.length; i++) {
+    if (cards[i].id === id) { c = cards[i]; break; }
+  }
+  if (!c) return;
+  document.getElementById("modalOverlay").classList.add("show");
+  var scenesStr = (c.scenes || []).join(", ");
+  var tagsStr = (c.dataTags || []).join(", ");
+  var secHtml = "";
+  var sections = c.sections && c.sections.length ? c.sections : [{ label: "", quote: "" }];
+  for (var i = 0; i < sections.length; i++) {
+    secHtml += "<div class=\"section-item\"><input placeholder=\"段落标题\" value=\"" + sections[i].label + "\" class=\"sec-label\"><textarea placeholder=\"段落内容\" class=\"sec-quote\" rows=\"2\">" + sections[i].quote + "</textarea><span class=\"rm\" onclick=\"this.parentElement.remove()\">✕</span></div>";
+  }
+  var statusOpts = "<option value=\"polished\"";
+  if (c.status === "polished") statusOpts += " selected";
+  statusOpts += ">已打磨</option><option value=\"draft\"";
+  if (c.status === "draft") statusOpts += " selected";
+  statusOpts += ">待验证</option>";
+  
+  document.getElementById("modalContent").innerHTML =     "<h3>编辑卡片</h3>" +     "<div class=\"field\"><label>标题</label><input id=\"cTitle\" value=\"" + c.title + "\"></div>" +     "<div class=\"field\"><label>副标题</label><input id=\"cSub\" value=\"" + (c.subtitle || "") + "\"></div>" +     "<div class=\"field\"><label>状态</label><select id=\"cStatus\">" + statusOpts + "</select></div>" +     "<div class=\"field\"><label>场景标签</label><input id=\"cScenes\" value=\"" + scenesStr + "\"></div>" +     "<div class=\"field\"><label>数据标签</label><input id=\"cTags\" value=\"" + tagsStr + "\"></div>" +     "<div class=\"field\"><label>内容段落</label><div id=\"sectionsWrap\">" + secHtml + "</div><span class=\"add-section\" onclick=\"addSection()\">+ 添加段落</span></div>" +     "<div class=\"modal-actions\"><div class=\"btn\" onclick=\"closeModal()\">取消</div><div class=\"btn danger\" onclick=\"deleteCard2(\'" + id + "\')\">删除卡片</div><div class=\"btn primary\" onclick=\"saveCard(\'" + id + "\')\">保存</div></div>";
+}
+
+function addSection() {
+  var wrap = document.getElementById("sectionsWrap");
+  var div = document.createElement("div");
+  div.className = "section-item";
+  div.innerHTML = "<input placeholder=\"段落标题\" class=\"sec-label\"><textarea placeholder=\"段落内容\" class=\"sec-quote\" rows=\"2\"></textarea><span class=\"rm\" onclick=\"this.parentElement.remove()\">✕</span>";
+  wrap.appendChild(div);
+}
+
+async function saveCard(id) {
+  var title = document.getElementById("cTitle").value.trim();
+  if (!title) return;
+  var secEls = document.querySelectorAll(".section-item");
+  var sections = [];
+  for (var i = 0; i < secEls.length; i++) {
+    var label = secEls[i].querySelector(".sec-label").value || "";
+    var quote = secEls[i].querySelector(".sec-quote").value || "";
+    sections.push({ label: label, quote: quote });
+  }
+  var scenes = [];
+  var scenesRaw = document.getElementById("cScenes").value;
+  if (scenesRaw) {
+    var parts = scenesRaw.split(",");
+    for (var i = 0; i < parts.length; i++) {
+      var s = parts[i].trim();
+      if (s) scenes.push(s);
+    }
+  }
+  var tags = [];
+  var tagsRaw = document.getElementById("cTags").value;
+  if (tagsRaw) {
+    var parts = tagsRaw.split(",");
+    for (var i = 0; i < parts.length; i++) {
+      var s = parts[i].trim();
+      if (s) tags.push(s);
+    }
+  }
+  var body = {
+    title: title,
+    subtitle: document.getElementById("cSub").value,
+    status: document.getElementById("cStatus").value,
+    scenes: scenes,
+    dataTags: tags,
+    sections: sections
+  };
+  var updated = await fetch(API + "/cards/" + id, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }).then(function(r) { return r.json(); });
+  for (var i = 0; i < cards.length; i++) {
+    if (cards[i].id === id) { cards[i] = updated; break; }
+  }
+  closeModal();
+  renderPage(updated.moduleId);
+}
+
+async function deleteCard(id) {
+  if (!confirm("确认删除？")) return;
+  var modId = null;
+  for (var i = 0; i < cards.length; i++) {
+    if (cards[i].id === id) { modId = cards[i].moduleId; break; }
+  }
+  await fetch(API + "/cards/" + id, { method: "DELETE" });
+  var newCards = [];
+  for (var i = 0; i < cards.length; i++) {
+    if (cards[i].id !== id) newCards.push(cards[i]);
+  }
+  cards = newCards;
+  if (modId) renderPage(modId);
+  updateStats();
+}
+
+function deleteCard2(id) { deleteCard(id); }
+function closeModal() { document.getElementById("modalOverlay").classList.remove("show"); }
+
+document.getElementById("sidebarToggle").addEventListener("click", function() {
+  document.getElementById("sidebar").classList.toggle("collapsed");
+});
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") closeModal();
+});
+
+function editResume() {
+  var mod = null;
+  for (var i = 0; i < modules.length; i++) {
+    if (modules[i].id === "resume") { mod = modules[i]; break; }
+  }
+  if (!mod) return;
+  var rd = mod.resumeData || {};
+  document.getElementById("modalOverlay").classList.add("show");
+  document.getElementById("modalContent").innerHTML =
+    "<h3>编辑个人简历</h3>" +
+    '<div class="field"><label>姓名</label><input id="resName" value="' + (rd.name||"") + '"></div>' +
+    '<div class="field"><label>电话</label><input id="resPhone" value="' + (rd.phone||"") + '"></div>' +
+    '<div class="field"><label>邮箱</label><input id="resEmail" value="' + (rd.email||"") + '"></div>' +
+    '<div class="field"><label>年龄 / 地点</label><div style="display:flex;gap:8px"><input id="resAge" placeholder="年龄" value="' + (rd.age||"") + '" style="flex:1"><input id="resLoc" placeholder="地点" value="' + (rd.location||"") + '" style="flex:2"></div></div>' +
+    '<div class="field"><label>求职意向</label><input id="resIntent" value="' + (rd.intent||"") + '"></div>' +
+    '<div class="field"><label>教育背景</label><input id="resEdu" value="' + (rd.education||"") + '"></div>' +
+    '<div class="field"><label>核心竞争力</label><textarea id="resCore" rows="2">' + (rd.core||"") + '</textarea></div>' +
+    '<div class="modal-actions"><div class="btn" onclick="closeModal()">取消</div><div class="btn primary" onclick="saveResume()">保存</div></div>';
+}
+
+function saveResume() {
+  var data = {
+    resumeData: {
+      name: document.getElementById("resName").value,
+      phone: document.getElementById("resPhone").value,
+      email: document.getElementById("resEmail").value,
+      age: document.getElementById("resAge").value,
+      location: document.getElementById("resLoc").value,
+      intent: document.getElementById("resIntent").value,
+      education: document.getElementById("resEdu").value,
+      core: document.getElementById("resCore").value
+    }
+  };
+  fetch(API + "/modules/resume", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) })
+    .then(function(r) { return r.json(); })
+    .then(function(updated) {
+      for (var i = 0; i < modules.length; i++) {
+        if (modules[i].id === "resume") { modules[i] = updated; break; }
+      }
+      closeModal();
+      renderPage("resume");
+    });
+}
+
+loadAll();
+
+</script>
+</body>
+</html>
