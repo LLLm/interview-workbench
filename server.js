@@ -2,7 +2,7 @@
 const cors = require("cors");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
-const Database = require("better-sqlite3");
+const { Pool } = require("pg");
 
 const app = express();
 app.use(cors());
@@ -10,59 +10,52 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.static(__dirname));
 
 const PORT = process.env.PORT || 3099;
-const DATA_DIR = process.env.DATA_DIR || __dirname;
-const db = new Database(path.join(DATA_DIR, "data.db"));
-db.pragma("journal_mode = WAL");
+const DATABASE_URL = process.env.DATABASE_URL;
 
-// Create tables
-db.exec(`
-  CREATE TABLE IF NOT EXISTS modules (
-    id TEXT PRIMARY KEY,
-    title TEXT NOT NULL,
-    description TEXT DEFAULT "",
-    icon TEXT DEFAULT "📄",
-    sort_order INTEGER DEFAULT 0,
-    resumeData TEXT DEFAULT NULL
-  );
-  CREATE TABLE IF NOT EXISTS cards (
-    id TEXT PRIMARY KEY,
-    moduleId TEXT NOT NULL,
-    title TEXT NOT NULL,
-    subtitle TEXT DEFAULT "",
-    status TEXT DEFAULT "draft",
-    scenes TEXT DEFAULT "[]",
-    dataTags TEXT DEFAULT "[]",
-    sections TEXT DEFAULT "[]",
-    sort_order INTEGER DEFAULT 0
-  );
-  CREATE INDEX IF NOT EXISTS idx_cards_module ON cards(moduleId);
-`);
-
-// Helper: row -> object
-function parseCard(row) {
-  if (!row) return null;
-  return {
-    id: row.id, moduleId: row.moduleId, title: row.title, subtitle: row.subtitle,
-    status: row.status,
-    scenes: JSON.parse(row.scenes || "[]"),
-    dataTags: JSON.parse(row.dataTags || "[]"),
-    sections: JSON.parse(row.sections || "[]"),
-    order: row.sort_order
-  };
+if (!DATABASE_URL) {
+  console.error("DATABASE_URL not set. Add it in Render Environment.");
+  process.exit(1);
 }
 
-function parseModule(row) {
-  if (!row) return null;
-  const m = { id: row.id, title: row.title, description: row.description, icon: row.icon, order: row.sort_order };
-  if (row.resumeData) {
-    try { m.resumeData = JSON.parse(row.resumeData); } catch(e) {}
+const pool = new Pool({
+  connectionString: DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
+
+async function init() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS modules (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      description TEXT DEFAULT '',
+      icon TEXT DEFAULT '📄',
+      sort_order INTEGER DEFAULT 0,
+      "resumeData" TEXT
+    );
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS cards (
+      id TEXT PRIMARY KEY,
+      "moduleId" TEXT NOT NULL,
+      title TEXT NOT NULL,
+      subtitle TEXT DEFAULT '',
+      status TEXT DEFAULT 'draft',
+      scenes TEXT DEFAULT '[]',
+      "dataTags" TEXT DEFAULT '[]',
+      sections TEXT DEFAULT '[]',
+      sort_order INTEGER DEFAULT 0
+    );
+  `);
+  await pool.query(`CREATE INDEX IF NOT EXISTS idx_cards_module ON cards("moduleId");`);
+
+  const count = await pool.query(`SELECT COUNT(*) as c FROM modules`);
+  if (parseInt(count.rows[0].c) === 0) {
+    await seed();
   }
-  return m;
+  console.log("db ready");
 }
 
-// Seed
-const count = db.prepare("SELECT COUNT(*) as c FROM modules").get();
-if (count.c === 0) {
+async function seed() {
   const mods = [
     ["intro","自我介绍","不同场景下的版本，按需调用","🧑",0,null],
     ["exp","经历","每段经历的结构化弹药","📋",1,null],
@@ -72,13 +65,10 @@ if (count.c === 0) {
     ["resume","个人简历","可编辑修改","📄",5,'{"name":"胡佳其","phone":"13135333569","email":"jackiehu0300@163.com","age":"22岁","location":"深圳","intent":"市场活动策划 / 活动运营","education":"湘潭理工学院 · 计算机科学与技术 · 本科","core":"执行落地·技术提效·内容赋能"}'],
     ["company","公司准备","面试前调研与弹药组合","🏢",6,null]
   ];
-  const ins = db.prepare("INSERT INTO modules (id,title,description,icon,sort_order,resumeData) VALUES (?,?,?,?,?,?)");
-  for (const m of mods) ins.run(...m);
-  console.log("seed modules ok");
-}
+  for (const m of mods) {
+    await pool.query(`INSERT INTO modules (id,title,description,icon,sort_order,"resumeData") VALUES ($1,$2,$3,$4,$5,$6)`, m);
+  }
 
-const cardCount = db.prepare("SELECT COUNT(*) as c FROM cards").get();
-if (cardCount.c === 0) {
   const cards = [
     ["c01","intro","90秒标准版","正式面试 · 视频/现场","polished",'["正式面试"]','["10+场活动"]','[{"label":"话术","quote":"我叫胡佳其，22岁，计算机专业本科。核心能力：执行落地——独立操盘10+场千人级活动，从搭建到控场零事故交付；技术提效——计算机+AI做活动数据复盘；内容赋能——让活动不只做完还有沉淀。"}]',0],
     ["c02","intro","30秒简短版","HR电话突袭","polished",'["电话面试"]','[]','[{"label":"话术","quote":"我是胡佳其，22岁，计算机专业本科。10+场千人级活动独立操盘零事故。"}]',1],
@@ -103,86 +93,110 @@ if (cardCount.c === 0) {
     ["c21","phrase","结束收束句","回答完留钩子","polished",'["回答完","反问前"]','[]','[{"label":"模板","quote":"这是我目前的理解，放到贵公司可能需要调整。"}]',3],
     ["c22","phrase","开场定调句","缓冲","draft",'["不好接的问题"]','[]','[{"label":"模板","quote":"这个问题很好，我从两个层面来看。"}]',4]
   ];
-  const ins = db.prepare("INSERT INTO cards (id,moduleId,title,subtitle,status,scenes,dataTags,sections,sort_order) VALUES (?,?,?,?,?,?,?,?,?)");
-  for (const c of cards) ins.run(...c);
-  console.log("seed cards ok");
+  for (const c of cards) {
+    await pool.query(`INSERT INTO cards (id,"moduleId",title,subtitle,status,scenes,"dataTags",sections,sort_order) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`, c);
+  }
+  console.log("seeded");
 }
 
-// API routes
-app.get("/api/modules", (req, res) => {
-  const rows = db.prepare("SELECT * FROM modules ORDER BY sort_order").all();
-  res.json(rows.map(parseModule));
-});
+function parseCard(row) {
+  if (!row) return null;
+  return {
+    id: row.id, moduleId: row.moduleId, title: row.title, subtitle: row.subtitle,
+    status: row.status,
+    scenes: JSON.parse(row.scenes || "[]"),
+    dataTags: JSON.parse(row.dataTags || "[]"),
+    sections: JSON.parse(row.sections || "[]"),
+    order: row.sort_order
+  };
+}
 
-app.post("/api/modules", (req, res) => {
-  const id = uuidv4();
-  const { title="新模块", description="", icon="📄" } = req.body;
-  const order = db.prepare("SELECT COALESCE(MAX(sort_order),0)+1 as n FROM modules").get().n;
-  db.prepare("INSERT INTO modules (id,title,description,icon,sort_order) VALUES (?,?,?,?,?)").run(id, title, description, icon, order);
-  res.json(parseModule(db.prepare("SELECT * FROM modules WHERE id=?").get(id)));
-});
-
-app.put("/api/modules/:id", (req, res) => {
-  const mod = db.prepare("SELECT * FROM modules WHERE id=?").get(req.params.id);
-  if (!mod) return res.status(404).end();
-  const { title, description, icon, resumeData } = req.body;
-  const updates = [];
-  const vals = [];
-  if (title !== undefined) { updates.push("title=?"); vals.push(title); }
-  if (description !== undefined) { updates.push("description=?"); vals.push(description); }
-  if (icon !== undefined) { updates.push("icon=?"); vals.push(icon); }
-  if (resumeData !== undefined) { updates.push("resumeData=?"); vals.push(JSON.stringify(resumeData)); }
-  if (updates.length) {
-    vals.push(req.params.id);
-    db.prepare("UPDATE modules SET " + updates.join(",") + " WHERE id=?").run(...vals);
+function parseModule(row) {
+  if (!row) return null;
+  const m = { id: row.id, title: row.title, description: row.description, icon: row.icon, order: row.sort_order };
+  if (row.resumeData) {
+    try { m.resumeData = JSON.parse(row.resumeData); } catch(e) {}
   }
-  res.json(parseModule(db.prepare("SELECT * FROM modules WHERE id=?").get(req.params.id)));
+  return m;
+}
+
+// Routes
+app.get("/api/modules", async (req, res) => {
+  const r = await pool.query(`SELECT * FROM modules ORDER BY sort_order`);
+  res.json(r.rows.map(parseModule));
 });
 
-app.delete("/api/modules/:id", (req, res) => {
-  db.prepare("DELETE FROM cards WHERE moduleId=?").run(req.params.id);
-  db.prepare("DELETE FROM modules WHERE id=?").run(req.params.id);
-  res.json({ok:1});
-});
-
-app.get("/api/modules/:moduleId/cards", (req, res) => {
-  const rows = db.prepare("SELECT * FROM cards WHERE moduleId=? ORDER BY sort_order").all(req.params.moduleId);
-  res.json(rows.map(parseCard));
-});
-
-app.post("/api/modules/:moduleId/cards", (req, res) => {
+app.post("/api/modules", async (req, res) => {
   const id = uuidv4();
-  const order = db.prepare("SELECT COALESCE(MAX(sort_order),0)+1 as n FROM cards WHERE moduleId=?").get(req.params.moduleId).n;
-  db.prepare("INSERT INTO cards (id,moduleId,title,subtitle,status,scenes,dataTags,sections,sort_order) VALUES (?,?,?,?,?,?,?,?,?)").run(
-    id, req.params.moduleId, "新卡片", "", "draft", "[]", "[]", '[{"label":"内容","quote":""}]', order
-  );
-  res.json(parseCard(db.prepare("SELECT * FROM cards WHERE id=?").get(id)));
+  const { title = "新模块", description = "", icon = "📄" } = req.body;
+  const ord = await pool.query(`SELECT COALESCE(MAX(sort_order),0)+1 as n FROM modules`);
+  const order = ord.rows[0].n;
+  await pool.query(`INSERT INTO modules (id,title,description,icon,sort_order) VALUES ($1,$2,$3,$4,$5)`, [id, title, description, icon, order]);
+  const r = await pool.query(`SELECT * FROM modules WHERE id=$1`, [id]);
+  res.json(parseModule(r.rows[0]));
 });
 
-app.put("/api/cards/:id", (req, res) => {
-  const card = db.prepare("SELECT * FROM cards WHERE id=?").get(req.params.id);
-  if (!card) return res.status(404).end();
+app.put("/api/modules/:id", async (req, res) => {
+  const { title, description, icon, resumeData } = req.body;
+  const sets = []; const vals = [];
+  if (title !== undefined) { sets.push("title=$"+(vals.length+1)); vals.push(title); }
+  if (description !== undefined) { sets.push("description=$"+(vals.length+1)); vals.push(description); }
+  if (icon !== undefined) { sets.push("icon=$"+(vals.length+1)); vals.push(icon); }
+  if (resumeData !== undefined) { sets.push('"resumeData"=$'+(vals.length+1)); vals.push(JSON.stringify(resumeData)); }
+  if (!sets.length) return res.status(400).end();
+  vals.push(req.params.id);
+  await pool.query(`UPDATE modules SET ${sets.join(",")} WHERE id=$${vals.length}`, vals);
+  const r = await pool.query(`SELECT * FROM modules WHERE id=$1`, [req.params.id]);
+  res.json(parseModule(r.rows[0]));
+});
+
+app.delete("/api/modules/:id", async (req, res) => {
+  await pool.query(`DELETE FROM cards WHERE "moduleId"=$1`, [req.params.id]);
+  await pool.query(`DELETE FROM modules WHERE id=$1`, [req.params.id]);
+  res.json({ ok: 1 });
+});
+
+app.get("/api/modules/:moduleId/cards", async (req, res) => {
+  const r = await pool.query(`SELECT * FROM cards WHERE "moduleId"=$1 ORDER BY sort_order`, [req.params.moduleId]);
+  res.json(r.rows.map(parseCard));
+});
+
+app.post("/api/modules/:moduleId/cards", async (req, res) => {
+  const id = uuidv4();
+  const ord = await pool.query(`SELECT COALESCE(MAX(sort_order),0)+1 as n FROM cards WHERE "moduleId"=$1`, [req.params.moduleId]);
+  const order = ord.rows[0].n;
+  await pool.query(`INSERT INTO cards (id,"moduleId",title,subtitle,status,scenes,"dataTags",sections,sort_order) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+    [id, req.params.moduleId, "新卡片", "", "draft", "[]", "[]", '[{"label":"内容","quote":""}]', order]);
+  const r = await pool.query(`SELECT * FROM cards WHERE id=$1`, [id]);
+  res.json(parseCard(r.rows[0]));
+});
+
+app.put("/api/cards/:id", async (req, res) => {
   const { title, subtitle, status, scenes, dataTags, sections } = req.body;
-  const updates = []; const vals = [];
-  if (title !== undefined) { updates.push("title=?"); vals.push(title); }
-  if (subtitle !== undefined) { updates.push("subtitle=?"); vals.push(subtitle); }
-  if (status !== undefined) { updates.push("status=?"); vals.push(status); }
-  if (scenes !== undefined) { updates.push("scenes=?"); vals.push(JSON.stringify(scenes)); }
-  if (dataTags !== undefined) { updates.push("dataTags=?"); vals.push(JSON.stringify(dataTags)); }
-  if (sections !== undefined) { updates.push("sections=?"); vals.push(JSON.stringify(sections)); }
-  if (updates.length) { vals.push(req.params.id); db.prepare("UPDATE cards SET " + updates.join(",") + " WHERE id=?").run(...vals); }
-  res.json(parseCard(db.prepare("SELECT * FROM cards WHERE id=?").get(req.params.id)));
+  const sets = []; const vals = [];
+  if (title !== undefined) { sets.push("title=$"+(vals.length+1)); vals.push(title); }
+  if (subtitle !== undefined) { sets.push("subtitle=$"+(vals.length+1)); vals.push(subtitle); }
+  if (status !== undefined) { sets.push("status=$"+(vals.length+1)); vals.push(status); }
+  if (scenes !== undefined) { sets.push("scenes=$"+(vals.length+1)); vals.push(JSON.stringify(scenes)); }
+  if (dataTags !== undefined) { sets.push('"dataTags"=$'+(vals.length+1)); vals.push(JSON.stringify(dataTags)); }
+  if (sections !== undefined) { sets.push("sections=$"+(vals.length+1)); vals.push(JSON.stringify(sections)); }
+  if (!sets.length) return res.status(400).end();
+  vals.push(req.params.id);
+  await pool.query(`UPDATE cards SET ${sets.join(",")} WHERE id=$${vals.length}`, vals);
+  const r = await pool.query(`SELECT * FROM cards WHERE id=$1`, [req.params.id]);
+  res.json(parseCard(r.rows[0]));
 });
 
-app.delete("/api/cards/:id", (req, res) => {
-  db.prepare("DELETE FROM cards WHERE id=?").run(req.params.id);
-  res.json({ok:1});
+app.delete("/api/cards/:id", async (req, res) => {
+  await pool.query(`DELETE FROM cards WHERE id=$1`, [req.params.id]);
+  res.json({ ok: 1 });
 });
 
-app.put("/api/data/restore", (req, res) => {
-  // not needed with SQLite, but keep for compatibility
-  res.json({ok:1});
+app.put("/api/data/restore", (req, res) => res.json({ ok: 1 }));
+
+init().then(() => {
+  app.listen(PORT, "0.0.0.0", () => console.log("workbench on http://0.0.0.0:" + PORT));
+}).catch(e => {
+  console.error("DB init failed:", e.message);
+  process.exit(1);
 });
-
-app.listen(PORT, "0.0.0.0", () => console.log("workbench on http://0.0.0.0:" + PORT));
-
